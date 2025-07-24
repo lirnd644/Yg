@@ -69,15 +69,27 @@ export const WebSocketProvider = ({ children }) => {
   };
 
   const handleMessage = (data) => {
+    console.log('WebSocket message received:', data);
     switch (data.type) {
       case 'new_message':
-        setMessages(prev => [...prev, data.message]);
+        // Parse timestamp back from ISO string
+        const messageWithDate = {
+          ...data.message,
+          timestamp: data.message.timestamp
+        };
+        setMessages(prev => {
+          // Check if message already exists
+          if (prev.find(msg => msg.id === messageWithDate.id)) {
+            return prev;
+          }
+          return [...prev, messageWithDate];
+        });
         break;
       case 'user_online':
-        // Handle user online status
+        console.log('User came online:', data.user_id);
         break;
       case 'user_offline':
-        // Handle user offline status
+        console.log('User went offline:', data.user_id);
         break;
       default:
         console.log('Unknown message type:', data.type);
