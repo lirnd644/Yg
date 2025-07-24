@@ -83,11 +83,11 @@ const UserSettings = ({ user, onClose }) => {
     await logout();
   };
 
-  const getAvatarUrl = () => {
+  const getSettingsAvatarUrl = () => {
     if (formData.avatar_url) {
       return formData.avatar_url;
     }
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user.display_name)}&size=80&background=3B82F6&color=ffffff&bold=true`;
+    return getAvatarUrl(user, 80);
   };
 
   return (
