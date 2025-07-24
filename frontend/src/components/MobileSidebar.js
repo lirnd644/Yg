@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import CreateGroupModal from './CreateGroupModal';
+import { getAvatarUrl, getGroupAvatarUrl } from '../utils/avatarUtils';
 
 const MobileSidebar = ({
   user,
