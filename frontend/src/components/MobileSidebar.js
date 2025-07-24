@@ -186,7 +186,10 @@ const MobileSidebar = ({
                         <img
                           src={getConversationAvatar(conversation)}
                           alt={getConversationTitle(conversation)}
-                          className="w-12 h-12 rounded-full flex-shrink-0"
+                          className="w-12 h-12 rounded-full flex-shrink-0 object-cover"
+                          onError={(e) => {
+                            e.target.src = getConversationAvatar(conversation);
+                          }}
                         />
                         <div className="ml-3 flex-1 min-w-0">
                           <div className="flex items-center justify-between">
