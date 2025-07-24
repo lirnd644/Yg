@@ -164,9 +164,12 @@ const UserSettings = ({ user, onClose }) => {
                 <div className="flex items-center space-x-6">
                   <div className="relative">
                     <img
-                      src={getAvatarUrl()}
+                      src={getSettingsAvatarUrl()}
                       alt="Avatar"
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                      onError={(e) => {
+                        e.target.src = getAvatarUrl(user, 80);
+                      }}
                     />
                     {uploading && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
