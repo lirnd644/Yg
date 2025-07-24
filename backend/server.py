@@ -71,7 +71,6 @@ class ConnectionManager:
                 await self.send_personal_message(message_str, connection_id)
 
     async def send_to_group(self, message: dict, user_ids: List[str]):
-        message_str = json.dumps(message)
         for user_id in user_ids:
             await self.send_to_user(message, user_id)
 
