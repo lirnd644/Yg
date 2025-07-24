@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const UserSettings = ({ user, onClose }) => {
   const { updateProfile, logout } = useAuth();
@@ -12,6 +16,8 @@ const UserSettings = ({ user, onClose }) => {
   });
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,6 +25,44 @@ const UserSettings = ({ user, onClose }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Выберите изображение');
+      return;
+    }
+
+    // Check file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Файл слишком большой (максимум 5MB)');
+      return;
+    }
+
+    setUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const response = await axios.post(`${API}/upload-avatar`, formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const avatarUrl = `${BACKEND_URL}${response.data.avatar_url}`;
+      setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
+      toast.success('Аватар загружен!');
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      toast.error('Ошибка загрузки аватара');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -36,6 +80,13 @@ const UserSettings = ({ user, onClose }) => {
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const getAvatarUrl = () => {
+    if (formData.avatar_url) {
+      return formData.avatar_url;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user.display_name)}&size=80&background=3B82F6&color=ffffff&bold=true`;
   };
 
   return (
