@@ -2,45 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #0f0f10;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* Custom scrollbar styles */
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
@@ -62,27 +23,65 @@
 
 /* Mobile-specific styles */
 @media (max-width: 768px) {
-  .md\:hidden {
-    display: block;
+  /* Ensure minimum touch target size */
+  button, input[type="button"], input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
   }
   
-  /* Make sidebar full width on mobile when open */
-  .mobile-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 50;
-    background: white;
+  /* Prevent zoom on input focus on iOS */
+  input, textarea, select {
+    font-size: 16px !important;
   }
   
-  /* Chat input improvements for mobile */
-  .mobile-chat-input {
-    position: sticky;
-    bottom: 0;
-    background: white;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  /* Full viewport height on mobile */
+  .mobile-full-height {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for better mobile support */
+  }
+  
+  /* Safe area insets for iPhone */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Chat message bubbles */
+  .message-bubble {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  /* Touch-friendly spacing */
+  .mobile-touch-spacing {
+    padding: 12px 16px;
+  }
+  
+  /* Hide scrollbars on mobile */
+  .mobile-hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .mobile-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* PWA Styles */
+@media (display-mode: standalone) {
+  .pwa-padding-top {
+    padding-top: env(safe-area-inset-top);
   }
 }
 
@@ -174,17 +173,6 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
 }
 
-/* Toast notifications styling */
-.toast-success {
-  background: #10b981;
-  color: white;
-}
-
-.toast-error {
-  background: #ef4444;
-  color: white;
-}
-
 /* Loading states */
 .loading-skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -201,7 +189,7 @@
   }
 }
 
-/* Dark theme support (future enhancement) */
+/* Dark theme support */
 @media (prefers-color-scheme: dark) {
   .dark-theme {
     --bg-primary: #1f2937;
@@ -210,21 +198,6 @@
     --text-secondary: #d1d5db;
     --border-color: #4b5563;
   }
-}
-
-/* PWA styles */
-.pwa-install-banner {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #1f2937;
-  color: white;
-  padding: 16px;
-  display: flex;
-  justify-content: between;
-  align-items: center;
-  z-index: 1000;
 }
 
 /* Accessibility improvements */
@@ -245,4 +218,70 @@
   .high-contrast {
     border: 2px solid;
   }
+}
+
+/* Better touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .landscape-adjust {
+    padding: 8px;
+  }
+  
+  .landscape-header {
+    padding: 8px 16px;
+  }
+}
+
+/* Fix for mobile keyboard overlay */
+@supports (height: 100dvh) {
+  .mobile-full-height {
+    height: 100dvh;
+  }
+}
+
+/* Custom utilities for mobile */
+.mobile-optimized {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input.mobile-optimized, textarea.mobile-optimized {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Pull to refresh prevention */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Chat bubble improvements */
+.chat-bubble-sent {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.chat-bubble-received {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Message input enhancements */
+.message-input {
+  transition: all 0.2s ease;
+  border-radius: 20px;
+}
+
+.message-input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
