@@ -234,9 +234,12 @@ const MobileSidebar = ({
                     <div className="flex items-center">
                       <div className="relative flex-shrink-0">
                         <img
-                          src={u.avatar_url || `https://via.placeholder.com/48x48/6B7280/FFFFFF?text=${u.display_name[0]}`}
+                          src={getAvatarUrl(u, 48)}
                           alt={u.display_name}
-                          className="w-12 h-12 rounded-full"
+                          className="w-12 h-12 rounded-full object-cover"
+                          onError={(e) => {
+                            e.target.src = getAvatarUrl(u, 48);
+                          }}
                         />
                         <div className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
                           u.is_online ? 'bg-green-400' : 'bg-gray-400'
