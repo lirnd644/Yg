@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getAvatarUrl } from '../utils/avatarUtils';
 
 const CreateGroupModal = ({ users, onClose, onCreateGroup }) => {
   const [groupName, setGroupName] = useState('');
