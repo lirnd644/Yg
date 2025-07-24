@@ -1,0 +1,307 @@
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+
+const UserSettings = ({ user, onClose }) => {
+  const { updateProfile, logout } = useAuth();
+  const [formData, setFormData] = useState({
+    display_name: user.display_name,
+    avatar_url: user.avatar_url || '',
+    theme: user.theme || 'light',
+    notifications_enabled: user.notifications_enabled ?? true
+  });
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const result = await updateProfile(formData);
+    
+    if (result.success) {
+      toast.success('Настройки сохранены!');
+    }
+    
+    setLoading(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  return (
+    <div className="flex-1 bg-white">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">Настройки</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div className="flex">
+        {/* Sidebar */}
+        <div className="w-64 border-r border-gray-200 bg-gray-50">
+          <nav className="p-4">
+            <button
+              onClick={() => setActiveTab('profile')}
+              className={`w-full text-left px-3 py-2 rounded-md mb-2 ${
+                activeTab === 'profile'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Профиль
+            </button>
+            <button
+              onClick={() => setActiveTab('appearance')}
+              className={`w-full text-left px-3 py-2 rounded-md mb-2 ${
+                activeTab === 'appearance'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Внешний вид
+            </button>
+            <button
+              onClick={() => setActiveTab('notifications')}
+              className={`w-full text-left px-3 py-2 rounded-md mb-2 ${
+                activeTab === 'notifications'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Уведомления
+            </button>
+            <button
+              onClick={() => setActiveTab('account')}
+              className={`w-full text-left px-3 py-2 rounded-md ${
+                activeTab === 'account'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Аккаунт
+            </button>
+          </nav>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-6">
+          {activeTab === 'profile' && (
+            <div className="max-w-lg">
+              <h3 className="text-lg font-medium text-gray-900 mb-6">Профиль</h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex items-center space-x-6">
+                  <img
+                    src={formData.avatar_url || `https://via.placeholder.com/80x80/3B82F6/FFFFFF?text=${user.display_name[0]}`}
+                    alt="Avatar"
+                    className="w-20 h-20 rounded-full"
+                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      URL аватара
+                    </label>
+                    <input
+                      type="url"
+                      name="avatar_url"
+                      value={formData.avatar_url}
+                      onChange={handleChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="https://example.com/avatar.jpg"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Отображаемое имя
+                  </label>
+                  <input
+                    type="text"
+                    name="display_name"
+                    value={formData.display_name}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Имя пользователя
+                  </label>
+                  <input
+                    type="text"
+                    value={user.username}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
+                    disabled
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Имя пользователя нельзя изменить</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={user.email}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
+                    disabled
+                  />
+                  <p className="mt-1 text-sm text-gray-500">Email нельзя изменить</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {loading ? 'Сохранение...' : 'Сохранить изменения'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {activeTab === 'appearance' && (
+            <div className="max-w-lg">
+              <h3 className="text-lg font-medium text-gray-900 mb-6">Внешний вид</h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Тема
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="theme"
+                        value="light"
+                        checked={formData.theme === 'light'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      Светлая
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="theme"
+                        value="dark"
+                        checked={formData.theme === 'dark'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      Темная
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="theme"
+                        value="auto"
+                        checked={formData.theme === 'auto'}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      Автоматическая
+                    </label>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {loading ? 'Сохранение...' : 'Сохранить изменения'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {activeTab === 'notifications' && (
+            <div className="max-w-lg">
+              <h3 className="text-lg font-medium text-gray-900 mb-6">Уведомления</h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Включить уведомления
+                    </label>
+                    <p className="text-sm text-gray-500">
+                      Получать уведомления о новых сообщениях
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    name="notifications_enabled"
+                    checked={formData.notifications_enabled}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {loading ? 'Сохранение...' : 'Сохранить изменения'}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {activeTab === 'account' && (
+            <div className="max-w-lg">
+              <h3 className="text-lg font-medium text-gray-900 mb-6">Аккаунт</h3>
+              
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Информация об аккаунте</h4>
+                  <p className="text-sm text-gray-600">
+                    Аккаунт создан: {new Date(user.created_at).toLocaleDateString('ru-RU')}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    ID: {user.id}
+                  </p>
+                </div>
+
+                <div className="border-t pt-6">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    Выйти из аккаунта
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserSettings;
