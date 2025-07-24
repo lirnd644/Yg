@@ -64,10 +64,10 @@ const MobileSidebar = ({
 
   const getConversationAvatar = (conversation) => {
     if (conversation.is_group) {
-      return 'https://via.placeholder.com/48x48/3B82F6/FFFFFF?text=Г';
+      return getGroupAvatarUrl(conversation.group_name, 48);
     } else {
       const otherParticipant = conversation.participants.find(p => p.id !== user.id);
-      return otherParticipant?.avatar_url || `https://via.placeholder.com/48x48/6B7280/FFFFFF?text=${otherParticipant?.display_name?.[0] || '?'}`;
+      return getAvatarUrl(otherParticipant, 48);
     }
   };
 
