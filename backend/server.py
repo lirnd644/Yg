@@ -347,14 +347,13 @@ async def send_message(
     message = Message(**message_dict)
     
     # Send to all participants via WebSocket
-    message_for_ws = {
+    message_dict_for_ws = message_dict.copy()
+    message_dict_for_ws["timestamp"] = message_dict["timestamp"].isoformat()
+    
+    await manager.send_to_group({
         "type": "new_message",
-        "message": {
-            **message_dict,
-            "timestamp": message_dict["timestamp"].isoformat()  # Convert datetime to string
-        }
-    }
-    await manager.send_to_group(message_for_ws, participant_ids)
+        "message": message_dict_for_ws
+    }, participant_ids)
     
     return message
 
