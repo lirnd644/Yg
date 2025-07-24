@@ -80,9 +80,12 @@ const MobileSidebar = ({
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <img
-                  src={user.avatar_url || `https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=${user.display_name[0]}`}
+                  src={getAvatarUrl(user, 40)}
                   alt={user.display_name}
-                  className="w-10 h-10 rounded-full"
+                  className="w-10 h-10 rounded-full object-cover"
+                  onError={(e) => {
+                    e.target.src = getAvatarUrl(user, 40);
+                  }}
                 />
                 <div className="ml-3">
                   <h3 className="font-semibold text-gray-900">{user.display_name}</h3>
