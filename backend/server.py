@@ -258,7 +258,53 @@ async def logout(current_user: UserProfile = Depends(get_current_user)):
 async def get_current_user_profile(current_user: UserProfile = Depends(get_current_user)):
     return current_user
 
-@api_router.put("/me", response_model=UserProfile)
+@api_router.post("/upload-avatar")
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: UserProfile = Depends(get_current_user)
+):
+    # Check file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Check file size (max 5MB)
+    if file.size > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large")
+    
+    # Create uploads directory if not exists
+    import os
+    uploads_dir = ROOT_DIR / "uploads" / "avatars"
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate unique filename
+    import uuid
+    file_extension = file.filename.split('.')[-1]
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    file_path = uploads_dir / unique_filename
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        content = await file.read()
+        buffer.write(content)
+    
+    # Update user avatar URL
+    avatar_url = f"/api/uploads/avatars/{unique_filename}"
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {"avatar_url": avatar_url}}
+    )
+    
+    return {"avatar_url": avatar_url}
+
+@api_router.get("/uploads/avatars/{filename}")
+async def get_avatar(filename: str):
+    from fastapi.responses import FileResponse
+    file_path = ROOT_DIR / "uploads" / "avatars" / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Avatar not found")
+    
+    return FileResponse(file_path)
 async def update_profile(
     settings: UserSettings,
     current_user: UserProfile = Depends(get_current_user)
