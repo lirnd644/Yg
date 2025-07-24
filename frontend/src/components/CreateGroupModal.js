@@ -80,9 +80,12 @@ const CreateGroupModal = ({ users, onClose, onCreateGroup }) => {
                     className="mr-3"
                   />
                   <img
-                    src={user.avatar_url || `https://via.placeholder.com/32x32/6B7280/FFFFFF?text=${user.display_name[0]}`}
+                    src={getAvatarUrl(user, 32)}
                     alt={user.display_name}
-                    className="w-8 h-8 rounded-full mr-3"
+                    className="w-8 h-8 rounded-full mr-3 object-cover"
+                    onError={(e) => {
+                      e.target.src = getAvatarUrl(user, 32);
+                    }}
                   />
                   <div>
                     <p className="text-sm font-medium">{user.display_name}</p>
