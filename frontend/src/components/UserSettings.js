@@ -161,23 +161,39 @@ const UserSettings = ({ user, onClose }) => {
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="flex items-center space-x-6">
-                  <img
-                    src={formData.avatar_url || `https://via.placeholder.com/80x80/3B82F6/FFFFFF?text=${user.display_name[0]}`}
-                    alt="Avatar"
-                    className="w-20 h-20 rounded-full"
-                  />
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      URL аватара
-                    </label>
-                    <input
-                      type="url"
-                      name="avatar_url"
-                      value={formData.avatar_url}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="https://example.com/avatar.jpg"
+                  <div className="relative">
+                    <img
+                      src={getAvatarUrl()}
+                      alt="Avatar"
+                      className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                     />
+                    {uploading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {uploading ? 'Загрузка...' : 'Изменить аватар'}
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      Поддерживаются JPG, PNG, GIF до 5MB
+                    </p>
                   </div>
                 </div>
 
