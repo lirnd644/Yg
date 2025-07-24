@@ -305,6 +305,8 @@ async def get_avatar(filename: str):
         raise HTTPException(status_code=404, detail="Avatar not found")
     
     return FileResponse(file_path)
+
+@api_router.put("/me", response_model=UserProfile)
 async def update_profile(
     settings: UserSettings,
     current_user: UserProfile = Depends(get_current_user)
